@@ -5,6 +5,83 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reserva de Hotel</title>
     <style>
+
+
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(0,100,200,0.3) 0%, rgba(150,0,80,0.3) 100%);
+    mix-blend-mode: multiply;
+}
+
+
+
+body {
+    background-image: url('back.jpg');
+    box-shadow: 0 0 100px rgba(0, 150, 255, 0.5) inset;
+    animation: pulse 8s infinite alternate;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 100px rgba(0, 150, 255, 0.5) inset; }
+    100% { box-shadow: 0 0 200px rgba(0, 200, 255, 0.8) inset; }
+}
+
+body {
+    background: 
+        linear-gradient(45deg, 
+            #ff00cc 0%, 
+            #3333ff 50%, 
+            #00ccff 100%),
+        url('back.jpg') center/cover;
+    background-blend-mode: overlay;
+    animation: dissolve 15s infinite alternate;
+}
+
+@keyframes dissolve {
+    0% { background-size: 100% 100%, cover; }
+    100% { background-size: 300% 300%, cover; }
+}
+
+body {
+    background-image: url('back.jpg');
+    animation: glitch 5s infinite;
+}
+
+@keyframes glitch {
+    0%, 100% { background-position: 0 0; }
+    20% { background-position: -5px 0; }
+    40% { background-position: 5px -5px; }
+    60% { background-position: -5px 5px; }
+    80% { background-position: 5px 0; }
+}
+
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: rgba(0, 255, 200, 0.7);
+    box-shadow: 0 0 10px rgba(0, 255, 200, 0.9);
+    animation: scan 8s linear infinite;
+    z-index: 100;
+}
+
+@keyframes scan {
+    0% { top: -5px; }
+    100% { top: 100%; }
+}
+
+
+
         /* === ESTILOS GERAIS === */
         body {
             font-family: Arial, sans-serif;
@@ -316,5 +393,6 @@
         // Validar formulário ao carregar
         updateWhatsAppButton();
     </script>
+
 </body>
 </html>
