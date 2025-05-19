@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva de Hotel</title>
+    <style>
+        /* === ESTILOS GERAIS === */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            text-align: center;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: url('back.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5); /* Overlay escuro para melhor legibilidade */
+            z-index: -1;
+        }
+
+        .logo-container {
+            margin: 40px auto 20px;
+            max-width: 300px;
+        }
+        
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .reserva-btn {
+            background-color: #25D366;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 20px auto;
+            display: block;
+            width: 200px;
+            position: relative; /* Para ficar acima do overlay */
+        }
+
+        /* === MODAL (JANELA) === */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 15px;
+            width: 90%;
+            max-width: 450px;
+            max-height: 85vh;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            overflow-y: auto;
+            text-align: left;
+            position: relative;
+        }
+        
+        .close {
+            float: right;
+            font-size: 22px;
+            cursor: pointer;
+            color: #555;
+        }
+
+        /* === FORMULÁRIO COMPACTO === */
+        .form-group {
+            margin-bottom: 10px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            color: #555;
+            margin-bottom: 3px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 13px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .form-group textarea {
+            height: 70px;
+            resize: vertical;
+        }
+        
+        /* === BOTÃO WHATSAPP === */
+        .whatsapp-btn {
+            display: inline-block;
+            background-color: #25D366;
+            color: white;
+            text-decoration: none;
+            padding: 7px 15px;
+            font-size: 13px;
+            border-radius: 4px;
+            margin-top: 10px;
+            text-align: center;
+            cursor: pointer;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .whatsapp-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .error-message {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* === RODAPÉ === */
+        footer {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            margin-top: auto;
+            font-size: 14px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Centralizada -->
+    <div class="logo-container">
+        <img src="logo.jpg" alt="Logo do Hotel">
+    </div>
+    
+    <!-- Botão de Reserva -->
+    <button id="openModal" class="reserva-btn">Fazer Reserva</button>
+
+    <!-- Modal de Reserva -->
+    <div id="reservaModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 style="font-size: 18px; margin-top: 5px; color: #333;">Reserva</h2>
+            
+            <form id="reservaForm">
+                <div class="form-group">
+                    <label for="nome">Nome:</label>
+                    <input type="text" id="nome" required>
+                    <div class="error-message" id="nome-error">Por favor, insira seu nome</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="chegada">Chegada:</label>
+                    <input type="date" id="chegada" required>
+                    <div class="error-message" id="chegada-error">Por favor, selecione a data de chegada</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="partida">Partida:</label>
+                    <input type="date" id="partida" required>
+                    <div class="error-message" id="partida-error">Por favor, selecione a data de partida</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adultos">Adultos:</label>
+                    <input type="number" id="adultos" min="1" value="1" required>
+                    <div class="error-message" id="adultos-error">Por favor, insira o número de adultos</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="criancas">Crianças:</label>
+                    <input type="number" id="criancas" min="0" value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="mensagem">Observações:</label>
+                    <textarea id="mensagem" placeholder="Opcional"></textarea>
+                </div>
+                
+                <button type="button" id="whatsappBtn" class="whatsapp-btn" disabled>
+                    Enviar Reserva via WhatsApp
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Rodapé -->
+    <footer>
+        Site desenvolvido por Leonardo Nardy
+    </footer>
+
+    <script>
+        // Controle do Modal
+        const modal = document.getElementById("reservaModal");
+        const btn = document.getElementById("openModal");
+        const span = document.getElementsByClassName("close")[0];
+
+        btn.onclick = () => modal.style.display = "block";
+        span.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => {
+            if (event.target == modal) modal.style.display = "none";
+        }
+
+        // Validação do formulário e WhatsApp
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const formFields = ['nome', 'chegada', 'partida', 'adultos'];
+        const phoneNumber = '+2389340975'; // Número de Cabo Verde formatado
+        
+        // Função para validar todos os campos
+        function validateForm() {
+            let isValid = true;
+            
+            formFields.forEach(field => {
+                const element = document.getElementById(field);
+                const errorElement = document.getElementById(`${field}-error`);
+                
+                if (!element.value.trim()) {
+                    errorElement.style.display = 'block';
+                    isValid = false;
+                } else {
+                    errorElement.style.display = 'none';
+                }
+            });
+            
+            // Validação adicional para datas
+            const chegada = document.getElementById('chegada').value;
+            const partida = document.getElementById('partida').value;
+            
+            if (chegada && partida && new Date(partida) < new Date(chegada)) {
+                document.getElementById('partida-error').textContent = 'A data de partida deve ser após a chegada';
+                document.getElementById('partida-error').style.display = 'block';
+                isValid = false;
+            }
+            
+            return isValid;
+        }
+        
+        // Atualizar estado do botão do WhatsApp
+        function updateWhatsAppButton() {
+            whatsappBtn.disabled = !validateForm();
+        }
+        
+        // Adicionar listeners para validação em tempo real
+        formFields.forEach(field => {
+            document.getElementById(field).addEventListener('input', updateWhatsAppButton);
+        });
+        
+        // Gerar e enviar mensagem pelo WhatsApp
+        whatsappBtn.addEventListener('click', function() {
+            if (validateForm()) {
+                const dados = {
+                    nome: document.getElementById('nome').value,
+                    chegada: document.getElementById('chegada').value,
+                    partida: document.getElementById('partida').value,
+                    adultos: document.getElementById('adultos').value,
+                    criancas: document.getElementById('criancas').value,
+                    mensagem: document.getElementById('mensagem').value
+                };
+                
+                // Formatar datas para exibição amigável
+                const formatDate = (dateString) => {
+                    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+                    return new Date(dateString).toLocaleDateString('pt-BR', options);
+                };
+                
+                // Criar mensagem formatada
+                const texto = `📌 *RESERVA CONFIRMADA* 📌\n\n` +
+                             `*Nome:* ${dados.nome}\n` +
+                             `*Período:* ${formatDate(dados.chegada)} à ${formatDate(dados.partida)}\n` +
+                             `*Hóspedes:* ${dados.adultos} adulto(s) e ${dados.criancas || '0'} criança(s)\n` +
+                             `*Observações:* ${dados.mensagem || 'Nenhuma'}\n\n` +
+                             `_Esta reserva foi enviada através do site_`;
+                
+                // Codificar mensagem para URL
+                const encodedMessage = encodeURIComponent(texto);
+                
+                // Abrir WhatsApp com mensagem pré-preenchida
+                window.open(`https://wa.me/${phoneNumber}?text=${encodedMessage}`, '_blank');
+            }
+        });
+        
+        // Validar formulário ao carregar
+        updateWhatsAppButton();
+    </script>
+</body>
+</html>
